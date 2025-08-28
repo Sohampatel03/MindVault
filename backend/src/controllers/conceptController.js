@@ -10,7 +10,8 @@ export const createConcept = async (req, res) => {
     let imageUrl = null, extractedText = "";
 
     if (req.file) {
-      const result = await cloudinary(req.file.path);
+      // const result = await cloudinary(req.file.path);
+      const result = await cloudinary.uploader.upload(req.file.path);
       imageUrl = result.secure_url;
       extractedText = await  ocrExtractByUrl(imageUrl);
     }
