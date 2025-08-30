@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { LogIn, Brain } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../hooks/useToast';
 import Input from '../ui/Input';
 import Button from '../ui/Button';
-import Toast from '../ui/Toast';
 
 const LoginForm = ({ onBack, onSwitchToRegister }) => {
+  const navigate = useNavigate();
   const { login, loading } = useAuth();
+  const { toast } = useToast();
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState({});
-  const [toast, setToast] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,29 +26,24 @@ const LoginForm = ({ onBack, onSwitchToRegister }) => {
     }
 
     const result = await login(formData.email, formData.password);
-    if (!result.success) {
-      setToast({ message: result.message, type: 'error' });
+    if (result.success) {
+      toast.success('Welcome back!');
+      navigate('/dashboard');
+    } else {
+      toast.error(result.message || 'Login failed');
     }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50 flex items-center justify-center px-4">
-      {toast && (
-        <Toast 
-          message={toast.message} 
-          type={toast.type} 
-          onClose={() => setToast(null)} 
-        />
-      )}
-      
-      <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md animate-fade-in">
+      <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
         <div className="text-center mb-8">
           <Brain className="w-12 h-12 text-indigo-600 mx-auto mb-4" />
           <h2 className="text-3xl font-bold text-gray-800">Welcome Back</h2>
           <p className="text-gray-600">Sign in to your MindVault account</p>
         </div>
 
-        <div>
+        <form onSubmit={handleSubmit} className="space-y-4">
           <Input
             icon={LogIn}
             type="email"
@@ -65,15 +62,15 @@ const LoginForm = ({ onBack, onSwitchToRegister }) => {
           />
 
           <Button 
-            onClick={handleSubmit}
-            className="w-full mb-4"
+            type="submit"
+            className="w-full"
             loading={loading}
           >
             Sign In
           </Button>
-        </div>
+        </form>
 
-        <div className="text-center">
+        <div className="text-center mt-6">
           <p className="text-gray-600 mb-4">
             Don't have an account?{' '}
             <button 
@@ -84,7 +81,7 @@ const LoginForm = ({ onBack, onSwitchToRegister }) => {
             </button>
           </p>
           <button 
-            onClick={onBack}
+            onClick={() => navigate('/')}
             className="text-gray-500 hover:text-gray-700 transition-colors"
           >
             ← Back to home

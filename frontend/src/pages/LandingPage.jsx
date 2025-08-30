@@ -1,8 +1,11 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Brain, Sparkles, FolderOpen, Trophy, Users, ArrowRight } from 'lucide-react';
 import Button from '../components/ui/Button';
 
-const LandingPage = ({ onShowLogin, onShowRegister }) => {
+const LandingPage = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
       {/* Header */}
@@ -12,8 +15,12 @@ const LandingPage = ({ onShowLogin, onShowRegister }) => {
           <span className="text-2xl font-bold text-gray-800">MindVault</span>
         </div>
         <div className="space-x-4">
-          <Button variant="outline" onClick={onShowLogin}>Login</Button>
-          <Button onClick={onShowRegister}>Sign Up</Button>
+          <Button variant="outline" onClick={() => navigate('/login')}>
+            Login
+          </Button>
+          <Button onClick={() => navigate('/register')}>
+            Sign Up
+          </Button>
         </div>
       </header>
 
@@ -35,11 +42,11 @@ const LandingPage = ({ onShowLogin, onShowRegister }) => {
               and let AI generate personalized questions for effective revision.
             </p>
             <div className="flex justify-center space-x-4">
-              <Button size="lg" onClick={onShowRegister}>
+              <Button size="lg" onClick={() => navigate('/register')}>
                 Get Started Free
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
-              <Button variant="outline" size="lg" onClick={onShowLogin}>
+              <Button variant="outline" size="lg" onClick={() => navigate('/login')}>
                 Sign In
               </Button>
             </div>
