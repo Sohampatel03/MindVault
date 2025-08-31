@@ -1,7 +1,17 @@
+// src/pages/FolderDetailPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Plus, Play, Search, Filter } from 'lucide-react';
+import { 
+  ArrowLeft, 
+  Plus, 
+  Play, 
+  Search, 
+  Filter,
+  Brain,
+  Target,
+  BarChart3
+} from 'lucide-react';
 import { useConcepts } from '../hooks/useConcepts';
 import { useToast } from '../hooks/useToast';
 
@@ -19,6 +29,7 @@ const FolderDetailPage = () => {
   
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState('all'); // all, text, image
+  const [folderName, setFolderName] = useState('Folder');
 
   useEffect(() => {
     if (folderId) {
@@ -28,7 +39,7 @@ const FolderDetailPage = () => {
 
   // Filter concepts based on search and filter
   const filteredConcepts = concepts?.filter(concept => {
-    const matchesSearch = concept.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    const matchesSearch = concept.conceptName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          concept.description?.toLowerCase().includes(searchQuery.toLowerCase());
     
     const matchesFilter = filter === 'all' || 
@@ -38,14 +49,18 @@ const FolderDetailPage = () => {
     return matchesSearch && matchesFilter;
   }) || [];
 
+  // Calculate quiz stats
+  const conceptsWithQuestions = concepts?.filter(c => c.question?.question) || [];
+  const canStartQuiz = conceptsWithQuestions.length > 0;
+
   const breadcrumbItems = [
     { label: 'Dashboard', href: '/dashboard' },
     { label: 'Folders', href: '/folders' },
-    { label: 'Folder Details', href: '#', current: true }
+    { label: folderName, href: '#', current: true }
   ];
 
   const handleDeleteConcept = async (concept) => {
-    if (window.confirm(`Delete "${concept.name}"? This cannot be undone.`)) {
+    if (window.confirm(`Delete "${concept.conceptName}"? This cannot be undone.`)) {
       try {
         await deleteConcept(concept._id);
         toast.success('Concept deleted successfully');
@@ -56,12 +71,28 @@ const FolderDetailPage = () => {
   };
 
   const handleStartQuiz = () => {
-    const conceptsWithQuestions = concepts?.filter(c => c.question) || [];
     if (conceptsWithQuestions.length === 0) {
       toast.error('No concepts with quiz questions found. Create some concepts first!');
       return;
     }
     navigate(`/folder/${folderId}/quiz`);
+  };
+
+  const handleViewConcept = (concept) => {
+    navigate(`/concept/${concept._id}`);
+  };
+
+  const handleEditConcept = (concept) => {
+    navigate(`/concept/${concept._id}/edit`);
+  };
+
+  const handleQuizSingleConcept = (concept) => {
+    if (!concept.question?.question) {
+      toast.error('This concept does not have a quiz question yet.');
+      return;
+    }
+    // Navigate to single concept quiz (future enhancement)
+    navigate(`/concept/${concept._id}/quiz`);
   };
 
   if (loading && !concepts) {
@@ -90,21 +121,25 @@ const FolderDetailPage = () => {
                 <span>Back to Folders</span>
               </Button>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Folder Concepts</h1>
-                <p className="text-gray-600">{filteredConcepts.length} concepts</p>
+                <h1 className="text-2xl font-bold text-gray-900">{folderName}</h1>
+                <p className="text-gray-600">
+                  {filteredConcepts.length} concepts • {conceptsWithQuestions.length} with quiz questions
+                </p>
               </div>
             </div>
             
             <div className="flex items-center space-x-3">
+              {/* Quiz Actions */}
               <Button
                 variant="outline"
                 onClick={handleStartQuiz}
-                disabled={!concepts?.some(c => c.question)}
+                disabled={!canStartQuiz}
                 className="flex items-center space-x-2"
               >
                 <Play className="w-4 h-4" />
-                <span>Start Quiz</span>
+                <span>Start Quiz ({conceptsWithQuestions.length})</span>
               </Button>
+              
               <Button
                 onClick={() => navigate(`/folder/${folderId}/create-concept`)}
                 className="flex items-center space-x-2"
@@ -119,6 +154,49 @@ const FolderDetailPage = () => {
 
       <main className="p-6">
         <div className="max-w-7xl mx-auto">
+          {/* Quiz Stats Banner */}
+          {concepts && concepts.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-xl p-6 mb-8"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <div className="p-3 bg-indigo-100 rounded-lg">
+                    <Target className="w-6 h-6 text-indigo-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">Quiz Ready</h3>
+                    <p className="text-gray-600">
+                      {conceptsWithQuestions.length} questions available for practice
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center space-x-3">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-indigo-600">{conceptsWithQuestions.length}</div>
+                    <div className="text-xs text-gray-500">Questions</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-purple-600">~{Math.ceil(conceptsWithQuestions.length * 1.5)}m</div>
+                    <div className="text-xs text-gray-500">Est. Time</div>
+                  </div>
+                  <Button
+                    onClick={handleStartQuiz}
+                    disabled={!canStartQuiz}
+                    className="flex items-center space-x-2"
+                    size="lg"
+                  >
+                    <Play className="w-5 h-5" />
+                    <span>Start Quiz</span>
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
           {/* Search and Filters */}
           {concepts && concepts.length > 0 && (
             <motion.div
@@ -151,6 +229,16 @@ const FolderDetailPage = () => {
                   <option value="text">Text Only</option>
                 </select>
               </div>
+
+              {/* View Analytics */}
+              <Button
+                variant="outline"
+                className="flex items-center space-x-2"
+                onClick={() => navigate(`/folder/${folderId}/analytics`)}
+              >
+                <BarChart3 className="w-4 h-4" />
+                <span>Analytics</span>
+              </Button>
             </motion.div>
           )}
 
@@ -170,11 +258,15 @@ const FolderDetailPage = () => {
                   transition={{ delay: index * 0.1 }}
                 >
                   <ConceptCard
-                    concept={concept}
-                    onView={(concept) => navigate(`/concept/${concept._id}`)}
-                    onEdit={(concept) => navigate(`/concept/${concept._id}/edit`)}
+                    concept={{
+                      ...concept,
+                      name: concept.conceptName, // Map field name for display
+                      createdAt: concept.createdAt || new Date()
+                    }}
+                    onView={handleViewConcept}
+                    onEdit={handleEditConcept}
                     onDelete={handleDeleteConcept}
-                    onQuiz={(concept) => navigate(`/concept/${concept._id}/quiz`)}
+                    onQuiz={handleQuizSingleConcept}
                   />
                 </motion.div>
               ))}

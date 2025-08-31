@@ -1,7 +1,17 @@
+// src/pages/DashboardPage.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FolderOpen, Brain, Trophy, TrendingUp, Plus, ArrowRight } from 'lucide-react';
+import { 
+  FolderOpen, 
+  Brain, 
+  Trophy, 
+  TrendingUp, 
+  Plus, 
+  ArrowRight,
+  Play,
+  Target
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useFolders } from '../hooks/useFolders';
 import { useToast } from '../hooks/useToast';
@@ -11,6 +21,7 @@ import Button from '../components/ui/Button';
 import StatsCard from '../components/dashboard/StatsCard';
 import QuickActions from '../components/dashboard/QuickActions';
 import CreateFolderModal from '../components/folders/CreateFolderModal';
+import QuizCard from '../components/quiz/QuizCard';
 
 const DashboardPage = () => {
   const navigate = useNavigate();
@@ -54,9 +65,18 @@ const DashboardPage = () => {
     try {
       await createFolder(folderData);
       toast.success('Folder created successfully!');
+      setShowCreateModal(false);
     } catch (error) {
       toast.error('Failed to create folder');
     }
+  };
+
+  const handleStartQuiz = (folderId) => {
+    navigate(`/folder/${folderId}/quiz`);
+  };
+
+  const handleViewFolder = (folderId) => {
+    navigate(`/folder/${folderId}`);
   };
 
   return (
@@ -146,6 +166,7 @@ const DashboardPage = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
+            className="mb-8"
           >
             <QuickActions
               onCreateFolder={() => setShowCreateModal(true)}
@@ -154,13 +175,56 @@ const DashboardPage = () => {
             />
           </motion.div>
 
-          {/* Recent Folders Preview */}
+          {/* Quiz Cards Section */}
           {folders && folders.length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
-              className="mt-8"
+              className="mb-8"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center space-x-3">
+                  <Target className="w-6 h-6 text-indigo-600" />
+                  <h2 className="text-xl font-semibold text-gray-900">Quick Quiz</h2>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => navigate('/folders')}
+                >
+                  View All Folders
+                </Button>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {folders.slice(0, 3).map((folder, index) => (
+                  <motion.div
+                    key={folder._id}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: index * 0.1 + 0.7 }}
+                  >
+                    <QuizCard
+                      folder={folder}
+                      conceptCount={Math.floor(Math.random() * 8) + 2} // TODO: Get real count
+                      onStartQuiz={handleStartQuiz}
+                      onViewFolder={handleViewFolder}
+                      lastScore={Math.floor(Math.random() * 40) + 60} // TODO: Get real score
+                      averageTime={Math.floor(Math.random() * 5) + 3} // TODO: Get real time
+                    />
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {/* Recent Folders Preview */}
+          {folders && folders.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
             >
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-semibold text-gray-900">Recent Folders</h2>
@@ -178,7 +242,7 @@ const DashboardPage = () => {
                     key={folder._id}
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: index * 0.1 + 0.7 }}
+                    transition={{ delay: index * 0.1 + 0.9 }}
                     onClick={() => navigate(`/folder/${folder._id}`)}
                     className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer group"
                   >

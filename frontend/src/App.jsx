@@ -1,3 +1,4 @@
+// src/App.jsx
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -11,6 +12,8 @@ import DashboardPage from './pages/DashboardPage';
 import FoldersPage from './pages/FoldersPage';
 import FolderDetailPage from './pages/FolderDetailPage';
 import CreateConceptPage from './pages/CreateConceptPage';
+import QuizPage from './pages/QuizPage';
+import QuizResultsPage from './pages/QuizResultsPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -66,10 +69,14 @@ function App() {
               {/* <Route path="/folder/:folderId/create-concept" element={<CreateConceptPage />} /> */}
               <Route path="/create-concept" element={<CreateConceptPage />} />
               
-              {/* Future Routes (Phase 4) */}
+              {/* Quiz Routes - Phase 4 */}
+              <Route path="/folder/:folderId/quiz" element={<QuizPage />} />
+              <Route path="/quiz/:folderId/results" element={<QuizResultsPage />} />
+              
+              {/* Future Routes */}
               {/* <Route path="/concept/:conceptId" element={<ConceptDetailPage />} /> */}
-              {/* <Route path="/folder/:folderId/quiz" element={<QuizPage />} /> */}
-              {/* <Route path="/quiz/:quizId/results" element={<QuizResultsPage />} /> */}
+              {/* <Route path="/profile" element={<ProfilePage />} /> */}
+              {/* <Route path="/settings" element={<SettingsPage />} /> */}
               
               {/* Redirect any unknown routes */}
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
