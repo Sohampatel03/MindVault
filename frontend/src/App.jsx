@@ -4,6 +4,10 @@ import { AuthProvider } from './context/AuthContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 
+// Routes wrappers
+import ProtectedRoute from './components/auth/ProtectedRoute';
+import PublicRoute from './components/auth/PublicRoute';
+
 // Page imports
 import LandingPage from './pages/LandingPage';
 import LoginForm from './components/auth/LoginForm';
@@ -12,6 +16,8 @@ import DashboardPage from './pages/DashboardPage';
 import FoldersPage from './pages/FoldersPage';
 import FolderDetailPage from './pages/FolderDetailPage';
 import CreateConceptPage from './pages/CreateConceptPage';
+import ConceptDetailPage from './pages/ConceptDetailPage';
+import EditConceptPage from './pages/EditConceptPage';
 import QuizPage from './pages/QuizPage';
 import QuizResultsPage from './pages/QuizResultsPage';
 
@@ -31,7 +37,7 @@ function App() {
         <BrowserRouter>
           <div className="App">
             {/* Toast Container */}
-            <Toaster 
+            <Toaster
               position="top-right"
               toastOptions={{
                 duration: 3000,
@@ -55,31 +61,99 @@ function App() {
                 },
               }}
             />
-            
+
             <Routes>
               {/* Public Routes */}
               <Route path="/" element={<LandingPage />} />
-              <Route path="/login" element={<LoginForm />} />
-              <Route path="/register" element={<RegisterForm />} />
-              
+              <Route
+                path="/login"
+                element={
+                  <PublicRoute>
+                    <LoginForm />
+                  </PublicRoute>
+                }
+              />
+              <Route
+                path="/register"
+                element={
+                  <PublicRoute>
+                    <RegisterForm />
+                  </PublicRoute>
+                }
+              />
+
               {/* Protected Routes */}
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/folders" element={<FoldersPage />} />
-              <Route path="/folder/:folderId" element={<FolderDetailPage />} />
-              {/* <Route path="/folder/:folderId/create-concept" element={<CreateConceptPage />} /> */}
-              <Route path="/create-concept" element={<CreateConceptPage />} />
-              
-              {/* Quiz Routes - Phase 4 */}
-              <Route path="/folder/:folderId/quiz" element={<QuizPage />} />
-              <Route path="/quiz/:folderId/results" element={<QuizResultsPage />} />
-              
-              {/* Future Routes */}
-              {/* <Route path="/concept/:conceptId" element={<ConceptDetailPage />} /> */}
-              {/* <Route path="/profile" element={<ProfilePage />} /> */}
-              {/* <Route path="/settings" element={<SettingsPage />} /> */}
-              
-              {/* Redirect any unknown routes */}
-              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <DashboardPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/folders"
+                element={
+                  <ProtectedRoute>
+                    <FoldersPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/folder/:folderId"
+                element={
+                  <ProtectedRoute>
+                    <FolderDetailPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/folder/:folderId/create-concept"
+                element={
+                  <ProtectedRoute>
+                    <CreateConceptPage />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Concept Routes */}
+              <Route
+                path="/concept/:conceptId"
+                element={
+                  <ProtectedRoute>
+                    <ConceptDetailPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/concept/:conceptId/edit"
+                element={
+                  <ProtectedRoute>
+                    <EditConceptPage />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Quiz Routes */}
+              <Route
+                path="/folder/:folderId/quiz"
+                element={
+                  <ProtectedRoute>
+                    <QuizPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/quiz/:folderId/results"
+                element={
+                  <ProtectedRoute>
+                    <QuizResultsPage />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Redirect unknown routes */}
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </div>
         </BrowserRouter>

@@ -78,15 +78,15 @@ const ProgressBar = ({
                 <span>{index + 1}</span>
               )}
               
-              {/* Current Question Pulse */}
+              {/* Current Question Pulse - subtle animation */}
               {isCurrent && (
                 <motion.div
                   animate={{
-                    scale: [1, 1.4, 1],
-                    opacity: [0.5, 0, 0.5]
+                    scale: [1, 1.1, 1],
+                    opacity: [0.3, 0, 0.3]
                   }}
                   transition={{
-                    duration: 2,
+                    duration: 1.5,
                     repeat: Infinity,
                     ease: "easeInOut"
                   }}

@@ -5,11 +5,12 @@ import Button from '../ui/Button';
 import Input from '../ui/Input';
 import ImageUpload from './ImageUpload';
 
-const ConceptForm = ({ onSubmit, loading = false, folderId }) => {
+const ConceptForm = ({ onSubmit, loading = false, folderId, initialData = null, isEdit = false }) => {
   const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    image: null
+    name: initialData?.name || '',
+    description: initialData?.description || '',
+    image: null,
+    imageUrl: initialData?.imageUrl || null
   });
   const [errors, setErrors] = useState({});
 
@@ -27,7 +28,8 @@ const ConceptForm = ({ onSubmit, loading = false, folderId }) => {
     }
     setFormData(prev => ({
       ...prev,
-      image: null
+      image: null,
+      imageUrl: null
     }));
   };
 
@@ -40,7 +42,7 @@ const ConceptForm = ({ onSubmit, loading = false, folderId }) => {
     if (!formData.name.trim()) {
       newErrors.name = 'Concept name is required';
     }
-    if (!formData.description.trim() && !formData.image) {
+    if (!formData.description.trim() && !formData.image && !formData.imageUrl) {
       newErrors.content = 'Please provide either a description or upload an image';
     }
 
@@ -54,17 +56,21 @@ const ConceptForm = ({ onSubmit, loading = false, folderId }) => {
         folderId,
         name: formData.name.trim(),
         description: formData.description.trim(),
-        image: formData.image?.file
+        image: formData.image?.file,
+        imageUrl: formData.imageUrl
       };
 
       await onSubmit(conceptData);
       
-      // Reset form
-      setFormData({
-        name: '',
-        description: '',
-        image: null
-      });
+      // Reset form only if not editing
+      if (!isEdit) {
+        setFormData({
+          name: '',
+          description: '',
+          image: null,
+          imageUrl: null
+        });
+      }
     } catch (error) {
       setErrors({ submit: 'Failed to create concept. Please try again.' });
     }
@@ -82,8 +88,12 @@ const ConceptForm = ({ onSubmit, loading = false, folderId }) => {
           <Brain className="w-6 h-6 text-indigo-600" />
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Create New Concept</h2>
-          <p className="text-gray-600">Add study materials and let AI generate quiz questions</p>
+          <h2 className="text-2xl font-bold text-gray-900">
+            {isEdit ? 'Edit Concept' : 'Create New Concept'}
+          </h2>
+          <p className="text-gray-600">
+            {isEdit ? 'Update your study materials and regenerate quiz questions' : 'Add study materials and let AI generate quiz questions'}
+          </p>
         </div>
       </div>
 
@@ -134,6 +144,7 @@ const ConceptForm = ({ onSubmit, loading = false, folderId }) => {
             onImageSelect={handleImageSelect}
             selectedImage={formData.image}
             onRemoveImage={handleRemoveImage}
+            existingImageUrl={formData.imageUrl}
           />
           <p className="text-xs text-gray-500 mt-2">
             💡 Tip: Upload images of notes, diagrams, or textbook pages for better AI quiz generation
@@ -197,7 +208,7 @@ const ConceptForm = ({ onSubmit, loading = false, folderId }) => {
             loading={loading}
           >
             <Brain className="w-4 h-4 mr-2" />
-            {loading ? 'Creating Concept...' : 'Create Concept'}
+            {loading ? (isEdit ? 'Updating Concept...' : 'Creating Concept...') : (isEdit ? 'Update Concept' : 'Create Concept')}
           </Button>
         </div>
       </form>

@@ -14,14 +14,14 @@ const LandingPage = () => {
           <Brain className="w-8 h-8 text-indigo-600" />
           <span className="text-2xl font-bold text-gray-800">MindVault</span>
         </div>
-        <div className="space-x-4">
+        {/* <div className="space-x-4">
           <Button variant="outline" onClick={() => navigate('/login')}>
             Login
           </Button>
           <Button onClick={() => navigate('/register')}>
             Sign Up
           </Button>
-        </div>
+        </div> */}
       </header>
 
       {/* Hero Section */}

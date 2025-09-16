@@ -3,7 +3,7 @@ import { useDropzone } from 'react-dropzone';
 import { motion } from 'framer-motion';
 import { Upload, Image, X, FileImage } from 'lucide-react';
 
-const ImageUpload = ({ onImageSelect, selectedImage, onRemoveImage }) => {
+const ImageUpload = ({ onImageSelect, selectedImage, onRemoveImage, existingImageUrl }) => {
   const [dragOver, setDragOver] = useState(false);
 
   const onDrop = useCallback((acceptedFiles) => {
@@ -33,7 +33,7 @@ const ImageUpload = ({ onImageSelect, selectedImage, onRemoveImage }) => {
 
   return (
     <div className="space-y-4">
-      {!selectedImage ? (
+      {!selectedImage && !existingImageUrl ? (
         <motion.div
           {...getRootProps()}
           whileHover={{ scale: 1.02 }}
@@ -83,10 +83,17 @@ const ImageUpload = ({ onImageSelect, selectedImage, onRemoveImage }) => {
             <div className="flex items-center space-x-3">
               <FileImage className="w-5 h-5 text-indigo-600" />
               <div>
-                <p className="font-medium text-gray-900">{selectedImage.name}</p>
-                <p className="text-sm text-gray-500">
-                  {(selectedImage.size / 1024 / 1024).toFixed(2)} MB
+                <p className="font-medium text-gray-900">
+                  {selectedImage ? selectedImage.name : 'Current Image'}
                 </p>
+                {selectedImage && (
+                  <p className="text-sm text-gray-500">
+                    {(selectedImage.size / 1024 / 1024).toFixed(2)} MB
+                  </p>
+                )}
+                {existingImageUrl && !selectedImage && (
+                  <p className="text-sm text-gray-500">Existing image</p>
+                )}
               </div>
             </div>
             <motion.button
@@ -101,7 +108,7 @@ const ImageUpload = ({ onImageSelect, selectedImage, onRemoveImage }) => {
           
           <div className="relative overflow-hidden rounded-lg bg-gray-50">
             <img
-              src={selectedImage.preview}
+              src={selectedImage ? selectedImage.preview : existingImageUrl}
               alt="Preview"
               className="w-full h-48 object-cover"
             />
@@ -109,6 +116,21 @@ const ImageUpload = ({ onImageSelect, selectedImage, onRemoveImage }) => {
               <div className="text-white text-sm">Preview</div>
             </div>
           </div>
+          
+          {/* Upload new image button for existing images */}
+          {existingImageUrl && !selectedImage && (
+            <div className="mt-3">
+              <motion.div
+                {...getRootProps()}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="border border-dashed border-gray-300 rounded-lg p-3 text-center cursor-pointer hover:border-indigo-400 hover:bg-gray-50 transition-all duration-200"
+              >
+                <input {...getInputProps()} />
+                <p className="text-sm text-gray-600">Click to replace image</p>
+              </motion.div>
+            </div>
+          )}
         </motion.div>
       )}
     </div>

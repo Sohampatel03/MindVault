@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Brain, 
@@ -24,6 +24,11 @@ const QuestionCard = ({
 }) => {
   const [selectedOption, setSelectedOption] = useState(currentAnswer || '');
   const [showExplanation, setShowExplanation] = useState(false);
+
+  // Update selectedOption when currentAnswer changes (when moving between questions)
+  useEffect(() => {
+    setSelectedOption(currentAnswer || '');
+  }, [currentAnswer]);
 
   const handleOptionSelect = (option) => {
     setSelectedOption(option);
@@ -215,7 +220,7 @@ const QuestionCard = ({
             disabled={!selectedOption}
             className="flex items-center space-x-2"
           >
-            <span>{isLast ? 'Finish Quiz' : 'Next'}</span>
+            <span>{isLast ? 'Submit Quiz' : 'Next'}</span>
           </Button>
         </div>
 

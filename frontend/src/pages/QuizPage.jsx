@@ -43,6 +43,7 @@ const QuizPage = () => {
     startQuiz,
     stopQuiz,
     resetQuiz,
+    resetQuizCompletely,
     answerQuestion,
     nextQuestion,
     previousQuestion,
@@ -68,12 +69,8 @@ const QuizPage = () => {
     }
   }, [folderId]);
 
-  // Auto-complete quiz when all questions answered
-  useEffect(() => {
-    if (isQuizComplete && quizState === 'active') {
-      handleCompleteQuiz();
-    }
-  }, [isQuizComplete, quizState]);
+  // Auto-complete quiz when all questions answered - REMOVED
+  // Users now need to click Submit on the last question
 
   const breadcrumbItems = [
     { label: 'Dashboard', href: '/dashboard' },
@@ -121,7 +118,7 @@ const QuizPage = () => {
   };
 
   const confirmExit = () => {
-    resetQuiz();
+    resetQuizCompletely();
     navigate(`/folder/${folderId}`);
   };
 
@@ -135,7 +132,8 @@ const QuizPage = () => {
   const handleNextQuestion = () => {
     if (currentQuestion < quiz.length - 1) {
       nextQuestion();
-    } else if (isQuizComplete) {
+    } else {
+      // This is the last question, submit the quiz
       handleCompleteQuiz();
     }
   };

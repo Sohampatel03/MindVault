@@ -6,7 +6,7 @@ import { useToast } from '../../hooks/useToast';
 import Input from '../ui/Input';
 import Button from '../ui/Button';
 
-const LoginForm = ({ onBack, onSwitchToRegister }) => {
+const LoginForm = () => {
   const navigate = useNavigate();
   const { login, loading } = useAuth();
   const { toast } = useToast();
@@ -28,7 +28,7 @@ const LoginForm = ({ onBack, onSwitchToRegister }) => {
     const result = await login(formData.email, formData.password);
     if (result.success) {
       toast.success('Welcome back!');
-      navigate('/dashboard');
+      navigate('/dashboard'); // ✅ redirect after login
     } else {
       toast.error(result.message || 'Login failed');
     }
@@ -74,7 +74,7 @@ const LoginForm = ({ onBack, onSwitchToRegister }) => {
           <p className="text-gray-600 mb-4">
             Don't have an account?{' '}
             <button 
-              onClick={onSwitchToRegister}
+              onClick={() => navigate('/register')}  // ✅ direct route change
               className="text-indigo-600 hover:text-indigo-700 font-semibold transition-colors"
             >
               Sign up

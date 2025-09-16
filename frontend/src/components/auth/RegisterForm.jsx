@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
-import { UserPlus, Brain,LogIn } from 'lucide-react';
+import { UserPlus, Brain, LogIn } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import Input from '../ui/Input';
 import Button from '../ui/Button';
 import Toast from '../ui/Toast';
+import { useNavigate } from 'react-router-dom';  // ✅ import navigate
 
-const RegisterForm = ({ onBack, onSwitchToLogin }) => {
+const RegisterForm = () => {
   const { register, loading } = useAuth();
   const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
   const [errors, setErrors] = useState({});
   const [toast, setToast] = useState(null);
+  const navigate = useNavigate(); // ✅ hook
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,8 +33,15 @@ const RegisterForm = ({ onBack, onSwitchToLogin }) => {
 
     const result = await register(formData.name, formData.email, formData.password);
     if (result.success) {
-      setToast({ message: 'Account created successfully! Please sign in.', type: 'success' });
-      setTimeout(() => onSwitchToLogin(), 2000);
+      setToast({ 
+        message: 'Account created successfully! Please sign in.', 
+        type: 'success' 
+      });
+      
+      // ✅ Redirect to login after success
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
     } else {
       setToast({ message: result.message, type: 'error' });
     }
@@ -102,14 +111,14 @@ const RegisterForm = ({ onBack, onSwitchToLogin }) => {
           <p className="text-gray-600 mb-4">
             Already have an account?{' '}
             <button 
-              onClick={onSwitchToLogin}
+              onClick={() => navigate('/login')}  // ✅ direct route change
               className="text-indigo-600 hover:text-indigo-700 font-semibold transition-colors"
             >
               Sign in
             </button>
           </p>
           <button 
-            onClick={onBack}
+            onClick={() => navigate('/')}
             className="text-gray-500 hover:text-gray-700 transition-colors"
           >
             ← Back to home

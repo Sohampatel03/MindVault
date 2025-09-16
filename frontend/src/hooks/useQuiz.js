@@ -56,8 +56,18 @@ export const useQuiz = () => {
     setIsActive(false);
   }, []);
 
-  // Reset quiz state
+  // Reset quiz state (for retake)
   const resetQuiz = useCallback(() => {
+    setCurrentQuestion(0);
+    setAnswers({});
+    setTimeElapsed(0);
+    setIsActive(false);
+    setError(null);
+    // Don't reset quiz data, just reset the state
+  }, []);
+
+  // Complete reset (for new quiz)
+  const resetQuizCompletely = useCallback(() => {
     setQuiz(null);
     setCurrentQuestion(0);
     setAnswers({});
@@ -164,6 +174,7 @@ export const useQuiz = () => {
     startQuiz,
     stopQuiz,
     resetQuiz,
+    resetQuizCompletely,
     answerQuestion,
     nextQuestion,
     previousQuestion,

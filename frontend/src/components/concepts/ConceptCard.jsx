@@ -146,16 +146,6 @@ const ConceptCard = ({ concept, onView, onEdit, onDelete, onQuiz }) => {
             <Eye className="w-4 h-4 mr-1" />
             View
           </Button>
-          {concept.question && (
-            <Button
-              size="sm"
-              className="flex-1"
-              onClick={() => onQuiz(concept)}
-            >
-              <Brain className="w-4 h-4 mr-1" />
-              Quiz
-            </Button>
-          )}
         </div>
       </div>
     </motion.div>
