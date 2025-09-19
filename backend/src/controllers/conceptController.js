@@ -2,7 +2,7 @@
 import Concept from "../models/Concept.js";
 import cloudinary from "../config/cloudinary.js";
 import { ocrExtractByUrl } from "../services/ocrClient.js";
-import { generateSingleQuestion } from "../services/openaiClient.js";
+import { generateSingleQuestion } from "../services/geminiClient.js";
 
 // Create concept
 export const createConcept = async (req, res) => {
