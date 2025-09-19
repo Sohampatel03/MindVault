@@ -3,6 +3,10 @@ import dotenv from "dotenv";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 dotenv.config();
 
+// Debug: Check if API key is loaded
+console.log("🔍 GEMINI_API_KEY exists:", !!process.env.GEMINI_API_KEY);
+console.log("🔍 GEMINI_API_KEY length:", process.env.GEMINI_API_KEY?.length || 0);
+
 // Initialize Gemini with API Key
 if (!process.env.GEMINI_API_KEY) {
   console.error("❌ GEMINI_API_KEY is missing at runtime.");
@@ -11,8 +15,9 @@ if (!process.env.GEMINI_API_KEY) {
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 export async function generateSingleQuestion({ conceptName, text }) {
+  console.log("🚀 Generating question for:", conceptName);
+  
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-  // If you specifically want 1.1: use "gemini-1.1-flash"
 
   const prompt = `You are a helpful tutor. Create exactly ONE multiple-choice question (with 4 options A-D) based on the concept name and text. Return JSON with keys: question, options (array), answer (one of A/B/C/D).
 
@@ -51,13 +56,14 @@ Make the question challenging but fair, with clear options and one correct answe
       throw new Error("Answer must be A, B, C, or D");
     }
 
+    console.log("✅ Question generated successfully");
     return {
       question: json.question,
       options: json.options,
       answer: json.answer,
     };
   } catch (e) {
-    console.error("Gemini error:", e.message);
+    console.error("❌ Gemini error:", e.message);
 
     // Fallback question
     return {

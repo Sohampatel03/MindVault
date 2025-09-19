@@ -1,8 +1,8 @@
-// backend/src/controllers/conceptController.js
+// backend/src/controllers/conceptController.js - TEMPORARY VERSION WITHOUT AI
 import Concept from "../models/Concept.js";
 import cloudinary from "../config/cloudinary.js";
 import { ocrExtractByUrl } from "../services/ocrClient.js";
-import { generateSingleQuestion } from "../services/geminiClient.js";
+// import { generateSingleQuestion } from "../services/geminiClient.js"; // Temporarily commented
 
 // Create concept
 export const createConcept = async (req, res) => {
@@ -16,16 +16,28 @@ export const createConcept = async (req, res) => {
       extractedText = await ocrExtractByUrl(imageUrl);
     }
 
-    const inputText = extractedText || description || "";
-    const question = await generateSingleQuestion({ 
-      conceptName: name, 
-      text: inputText 
-    });
+    // Temporarily skip AI question generation
+    const question = {
+      question: `What is the main topic of "${name}"?`,
+      options: [
+        "Option A - Basic concept",
+        "Option B - Advanced concept", 
+        "Option C - Related concept",
+        "Option D - Different concept"
+      ],
+      answer: "A"
+    };
+
+    // const inputText = extractedText || description || "";
+    // const question = await generateSingleQuestion({ 
+    //   conceptName: name, 
+    //   text: inputText 
+    // });
 
     const concept = await Concept.create({
-      folderId: folderId,          // Fixed: aligned with model
-      userId: req.user.id,         // Fixed: aligned with model
-      conceptName: name,           // Fixed: aligned with model
+      folderId: folderId,          
+      userId: req.user.id,         
+      conceptName: name,           
       description,
       imageUrl,
       question
@@ -43,10 +55,9 @@ export const getConcepts = async (req, res) => {
   try {
     const { folderId } = req.params;
     
-    // Validate user owns the folder or concepts
     const concepts = await Concept.find({ 
       folderId: folderId,
-      userId: req.user.id  // Ensure user can only see their concepts
+      userId: req.user.id  
     }).sort({ createdAt: -1 });
     
     res.json(concepts);
@@ -63,7 +74,7 @@ export const getConceptById = async (req, res) => {
     
     const concept = await Concept.findOne({
       _id: conceptId,
-      userId: req.user.id  // Ensure user owns this concept
+      userId: req.user.id  
     });
     
     if (!concept) {
@@ -92,13 +103,17 @@ export const updateConcept = async (req, res) => {
       const result = await cloudinary.uploader.upload(req.file.path);
       updateData.imageUrl = result.secure_url;
       
-      // Re-generate question with new content
-      const extractedText = await ocrExtractByUrl(result.secure_url);
-      const inputText = extractedText || description || "";
-      updateData.question = await generateSingleQuestion({ 
-        conceptName: name, 
-        text: inputText 
-      });
+      // Skip AI regeneration for now
+      updateData.question = {
+        question: `What is the updated concept of "${name}"?`,
+        options: [
+          "Option A - Updated content",
+          "Option B - Original content", 
+          "Option C - Related content",
+          "Option D - Different content"
+        ],
+        answer: "A"
+      };
     }
 
     const concept = await Concept.findOneAndUpdate(
