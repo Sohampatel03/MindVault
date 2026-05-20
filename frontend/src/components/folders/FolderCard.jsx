@@ -52,7 +52,7 @@ const FolderCard = ({ folder, onEdit, onDelete, onOpen, onView }) => {
               </button>
 
               {/* Edit */}
-              <button
+              {/* <button
                 onClick={(e) => {
                   e.stopPropagation();
                   onEdit(folder._id);
@@ -61,7 +61,7 @@ const FolderCard = ({ folder, onEdit, onDelete, onOpen, onView }) => {
                 className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               >
                 <Edit2 className="w-4 h-4 mr-2" /> Edit
-              </button>
+              </button> */}
 
               {/* Delete */}
               <button

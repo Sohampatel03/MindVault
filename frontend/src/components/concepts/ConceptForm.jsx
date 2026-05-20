@@ -72,8 +72,18 @@ const ConceptForm = ({ onSubmit, loading = false, folderId, initialData = null, 
         });
       }
     } catch (error) {
-      setErrors({ submit: 'Failed to create concept. Please try again.' });
-    }
+  console.error("Create concept error:", error);
+
+  // Agar error.response (axios/fetch) se aya hai to uska message nikalo
+  let errorMessage = "Failed to create concept. Please try again.";
+  if (error.response?.data?.message) {
+    errorMessage = error.response.data.message;
+  } else if (error.message) {
+    errorMessage = error.message;
+  }
+
+  setErrors({ submit: errorMessage });
+}
   };
 
   return (

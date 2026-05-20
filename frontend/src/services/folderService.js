@@ -24,5 +24,5 @@ export const folderService = {
   deleteFolder: async (folderId) => {
     const response = await apiClient.delete(`/folders/${folderId}`);
     return response.data;
-  }
+  },
 };
