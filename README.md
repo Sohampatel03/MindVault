@@ -1,6 +1,6 @@
 # 🧠 MindVault — AI-Powered Study Companion
 
-MindVault helps students organize notes into folders and concepts, then automatically generates multiple-choice quiz questions using AI so you can do active revision efficiently.
+MindVault helps students organize notes into folders and concepts, then automatically generates multiple-choice quiz questions using AI for active revision.
 
 ---
 
@@ -10,7 +10,7 @@ MindVault helps students organize notes into folders and concepts, then automati
 - **AI Quiz Generation** — Gemini AI reads your notes/images and generates MCQs automatically
 - **OCR Support** — Upload photos of handwritten notes; text is extracted and fed to the AI
 - **Timed Quizzes** — Take quizzes with a live timer, pause/resume, and navigate between questions
-- **Results & Analytics** — See your score, grade, per-question breakdown, and track improvement
+- **Results & Analytics** — See your score, grade, and per-question breakdown
 - **JWT Authentication** — Secure login/register with bcrypt-hashed passwords
 - **Image Uploads** — Cloudinary-backed image storage
 
@@ -22,7 +22,7 @@ MindVault helps students organize notes into folders and concepts, then automati
 |---|---|
 | Frontend | React 19, Tailwind CSS, Framer Motion, React Router v7 |
 | Backend | Node.js, Express 4, Mongoose (MongoDB) |
-| AI | Google Gemini 1.5 Flash (`@google/generative-ai`) |
+| AI | Google Gemini 2.0 Flash (`@google/genai`) |
 | OCR | Python FastAPI microservice (Tesseract + EasyOCR) |
 | Storage | Cloudinary (images) |
 | Auth | JWT + bcryptjs |
@@ -31,23 +31,21 @@ MindVault helps students organize notes into folders and concepts, then automati
 ---
 
 ## 📁 Project Structure
-
-```
 mindvault/
 ├── backend/
-│   ├── server.js                  # Entry point
+│   ├── server.js
 │   ├── src/
-│   │   ├── app.js                 # Express app setup
+│   │   ├── app.js
 │   │   ├── config/
-│   │   │   ├── db.js              # MongoDB connection
-│   │   │   └── cloudinary.js      # Cloudinary config
+│   │   │   ├── db.js
+│   │   │   └── cloudinary.js
 │   │   ├── controllers/
 │   │   │   ├── authController.js
 │   │   │   ├── conceptController.js
 │   │   │   ├── folderController.js
 │   │   │   └── quizController.js
 │   │   ├── middleware/
-│   │   │   └── auth.js            # JWT protect middleware
+│   │   │   └── auth.js
 │   │   ├── models/
 │   │   │   ├── User.js
 │   │   │   ├── Folder.js
@@ -59,37 +57,32 @@ mindvault/
 │   │   │   ├── concept.routes.js
 │   │   │   └── quiz.routes.js
 │   │   └── services/
-│   │       ├── geminiClient.js    # AI question generation
-│   │       ├── ocrClient.js       # OCR microservice client
-│   │       └── openaiClient.js    # (alternative, unused)
-│   └── ocr-service/               # Python FastAPI OCR microservice
+│   │       ├── geminiClient.js
+│   │       └── ocrClient.js
+│   └── ocr-service/
 │       ├── app.py
 │       ├── requirements.txt
 │       ├── services/ocr_processor.py
 │       └── utils/image_utils.py
 └── frontend/
-    ├── src/
-    │   ├── App.jsx
-    │   ├── context/AuthContext.jsx
-    │   ├── hooks/               # useFolders, useConcepts, useQuiz, useToast
-    │   ├── pages/               # LandingPage, Dashboard, Folders, Quiz, etc.
-    │   ├── components/          # auth, concepts, folders, quiz, ui, layout
-    │   └── services/            # api.js, folderService, conceptService, quizService
-    └── tailwind.config.js
-```
-
+└── src/
+├── App.jsx
+├── context/AuthContext.jsx
+├── hooks/
+├── pages/
+├── components/
+└── services/
 ---
 
-## 🚀 Getting Started (Local Development)
+## 🚀 Getting Started
 
 ### Prerequisites
 
-- Node.js ≥ 18
+- Node.js ≥ 20 (required by `@google/genai`)
 - MongoDB (local or Atlas)
-- Python 3.9+ (for OCR service)
-- Tesseract OCR installed on your system
+- Python 3.9+ (for OCR service, optional)
 - Cloudinary account
-- Google Gemini API key
+- Google Gemini API key (from [aistudio.google.com](https://aistudio.google.com/apikey))
 
 ### 1. Clone & install
 
@@ -105,21 +98,23 @@ cd backend
 npm install
 ```
 
-Create `backend/.env`:
+Create `backend/.env` from `backend/.env.example`:
 
 ```env
 PORT=5000
 MONGO_URI=mongodb://localhost:27017/mindvault
-JWT_SECRET=your_super_secret_jwt_key_here
+JWT_SECRET=your_super_secret_jwt_key_min_32_chars
 CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
 GEMINI_API_KEY=your_gemini_api_key
 OCR_SERVICE_URL=http://localhost:8000
+ALLOWED_ORIGINS=http://localhost:3000
+NODE_ENV=development
 ```
 
 ```bash
-npm run dev        # starts on port 5000
+npm run dev
 ```
 
 ### 3. Frontend setup
@@ -127,7 +122,11 @@ npm run dev        # starts on port 5000
 ```bash
 cd frontend
 npm install
-npm start          # starts on port 3000
+```
+
+Create `frontend/.env`: REACT_APP_API_URL=http://localhost:5000
+```bash
+npm start
 ```
 
 ### 4. OCR service setup (optional)
@@ -135,10 +134,10 @@ npm start          # starts on port 3000
 ```bash
 cd backend/ocr-service
 pip install -r requirements.txt
-python app.py      # starts on port 8000
+python app.py
 ```
 
-> OCR is optional — if the service is down, concept creation still works; the image text just won't be extracted.
+> OCR is optional — concepts still work without it; image text just won't be extracted.
 
 ---
 
@@ -150,6 +149,7 @@ python app.py      # starts on port 8000
 |--------|----------|-------------|
 | POST | `/api/auth/signup` | Register new user |
 | POST | `/api/auth/login` | Login, returns JWT |
+| GET | `/api/auth/me` | Get current user (requires token) |
 
 ### Folders *(protected)*
 
@@ -157,6 +157,9 @@ python app.py      # starts on port 8000
 |--------|----------|-------------|
 | GET | `/api/folders` | Get all user folders |
 | POST | `/api/folders` | Create folder |
+| GET | `/api/folders/:folderId` | Get single folder |
+| PATCH | `/api/folders/:folderId` | Update folder |
+| DELETE | `/api/folders/:folderId` | Delete folder |
 
 ### Concepts *(protected)*
 
@@ -174,7 +177,8 @@ python app.py      # starts on port 8000
 |--------|----------|-------------|
 | GET | `/api/quiz/:folderId` | Generate quiz for folder |
 | POST | `/api/quiz/:folderId/results` | Submit quiz result |
-| GET | `/api/quiz/history/:folderId?` | Get quiz history |
+| GET | `/api/quiz/history` | Get all quiz history |
+| GET | `/api/quiz/history/:folderId` | Get folder quiz history |
 | GET | `/api/quiz/analytics/:folderId` | Get quiz analytics |
 
 ---
@@ -187,12 +191,14 @@ python app.py      # starts on port 8000
 |----------|----------|-------------|
 | `PORT` | No | Server port (default: 5000) |
 | `MONGO_URI` | ✅ | MongoDB connection string |
-| `JWT_SECRET` | ✅ | Secret for signing JWTs |
+| `JWT_SECRET` | ✅ | Secret for signing JWTs (min 32 chars) |
 | `CLOUDINARY_CLOUD_NAME` | ✅ | Cloudinary cloud name |
 | `CLOUDINARY_API_KEY` | ✅ | Cloudinary API key |
 | `CLOUDINARY_API_SECRET` | ✅ | Cloudinary API secret |
 | `GEMINI_API_KEY` | ✅ | Google Gemini API key |
 | `OCR_SERVICE_URL` | No | OCR service URL (default: http://localhost:8000) |
+| `ALLOWED_ORIGINS` | No | Comma-separated CORS origins |
+| `NODE_ENV` | No | `development` or `production` |
 
 ### Frontend (`frontend/.env`)
 
@@ -202,9 +208,13 @@ python app.py      # starts on port 8000
 
 ---
 
-## 🚢 Deployment Notes
+## ⚠️ Node.js Version
 
-See the deployment checklist in the project wiki or refer to the issues list for current pre-deploy tasks.
+`@google/genai` requires **Node.js ≥ 20**. Check your version:
+
+```bash
+node --version
+```
 
 ---
 
@@ -212,7 +222,5 @@ See the deployment checklist in the project wiki or refer to the issues list for
 
 1. Fork the repo
 2. Create a feature branch: `git checkout -b feature/my-feature`
-3. Commit your changes: `git commit -m 'Add my feature'`
+3. Commit: `git commit -m 'Add my feature'`
 4. Push and open a Pull Request
-
----
