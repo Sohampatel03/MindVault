@@ -1,45 +1,76 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import AppLoader from '../components/common/AppLoader';
 
 const AuthContext = createContext();
 
-// Base URL — just the host, no trailing slash, no /api
+// const API = 'http://localhost:5000'; // Change to your Render URL for production
 const BASE_URL = (process.env.REACT_APP_API_URL || 'http://localhost:5000').replace(/\/$/, '');
+// How long to wait for backend ping before giving up (ms)
+const PING_TIMEOUT = 60000; // 60 seconds for Render cold start
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [initializing, setInitializing] = useState(true);
+  const [backendReady, setBackendReady] = useState(false);
 
-  // Restore session from token on mount
   useEffect(() => {
-    const restoreSession = async () => {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setInitializing(false);
-        return;
-      }
+    const initApp = async () => {
+      // Step 1: Wake up backend (handles Render cold start)
+      await pingBackend();
 
-      try {
-        const response = await fetch(`${BASE_URL}/api/auth/me`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+      // Step 2: Restore session if token exists
+      await restoreSession();
 
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data);
-        } else {
-          localStorage.removeItem('token');
-        }
-      } catch (err) {
-        console.error('Session restore failed:', err.message);
-        localStorage.removeItem('token');
-      } finally {
-        setInitializing(false);
-      }
+      setInitializing(false);
     };
 
-    restoreSession();
+    initApp();
   }, []);
+
+  // Ping backend until it responds
+  const pingBackend = async () => {
+    const startTime = Date.now();
+
+    while (Date.now() - startTime < PING_TIMEOUT) {
+      try {
+        const res = await fetch(`${BASE_URL}/`, {
+          signal: AbortSignal.timeout(5000),
+        });
+        if (res.ok) {
+          setBackendReady(true);
+          return; // Backend is awake
+        }
+      } catch {
+        // Backend not ready yet, wait and retry
+        await new Promise((r) => setTimeout(r, 3000));
+      }
+    }
+
+    // Timeout — proceed anyway (might still work)
+    setBackendReady(true);
+  };
+
+  const restoreSession = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      const response = await fetch(`${BASE_URL}/api/auth/me`, {
+        headers: { Authorization: 'Bearer ' + token },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data);
+      } else {
+        localStorage.removeItem('token');
+      }
+    } catch (err) {
+      console.error('Session restore failed:', err.message);
+      localStorage.removeItem('token');
+    }
+  };
 
   const login = async (email, password) => {
     setLoading(true);
@@ -87,12 +118,9 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  // Show loader while backend is waking up or session is restoring
   if (initializing) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <AppLoader />;
   }
 
   return (
