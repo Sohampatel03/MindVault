@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Brain, Sparkles, FolderOpen, Trophy, Users, ArrowRight } from 'lucide-react';
+import { Brain, Sparkles, FolderOpen, Trophy, ArrowRight } from 'lucide-react';
 import Button from '../components/ui/Button';
 
 const LandingPage = () => {

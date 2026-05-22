@@ -4,8 +4,7 @@ import { motion } from 'framer-motion';
 import { 
   Trophy, 
   Clock, 
-  Target, 
-  TrendingUp, 
+  Target,  
   RefreshCw, 
   Home,
   Share2,

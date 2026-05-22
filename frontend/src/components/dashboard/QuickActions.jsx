@@ -1,6 +1,6 @@
 import React from 'react';
-import { FolderPlus, Upload, BookOpen, Target, Zap } from 'lucide-react';
-import Button from '../ui/Button';
+import { FolderPlus, Upload, Target, Zap } from 'lucide-react';
+// import Button from '../ui/Button';
 
 const QuickActions = ({ onCreateFolder, onUploadConcept, onTakeQuiz }) => {
   const actions = [

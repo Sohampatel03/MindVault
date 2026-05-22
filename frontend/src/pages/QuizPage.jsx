@@ -6,10 +6,8 @@ import {
   ArrowLeft, 
   Play, 
   Pause, 
-  RotateCcw,
   Brain,
   AlertTriangle,
-  CheckCircle
 } from 'lucide-react';
 
 // Custom Hooks
@@ -38,7 +36,6 @@ const QuizPage = () => {
     isActive,
     loading,
     error,
-    isQuizComplete,
     loadQuiz,
     startQuiz,
     stopQuiz,
@@ -50,24 +47,20 @@ const QuizPage = () => {
     goToQuestion,
     calculateResults,
     getCurrentQuestion,
-    getProgress
   } = useQuiz();
 
   const [quizState, setQuizState] = useState('loading'); // loading, ready, active, paused, completed
   const [showConfirmExit, setShowConfirmExit] = useState(false);
 
   // Load quiz on component mount
-  useEffect(() => {
-    if (folderId) {
-      loadQuiz(folderId)
-        .then(() => {
-          setQuizState('ready');
-        })
-        .catch(() => {
-          setQuizState('error');
-        });
-    }
-  }, [folderId]);
+ useEffect(() => {
+  if (folderId) {
+    loadQuiz(folderId)
+      .then(() => setQuizState('ready'))
+      .catch(() => setQuizState('error'));
+  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [folderId]);
 
   // Auto-complete quiz when all questions answered - REMOVED
   // Users now need to click Submit on the last question

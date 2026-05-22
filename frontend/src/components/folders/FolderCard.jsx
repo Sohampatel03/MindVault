@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Folder, MoreHorizontal, Edit2, Trash2, Eye, Calendar } from 'lucide-react';
+import { Folder, MoreHorizontal, Trash2, Eye, Calendar } from 'lucide-react';
 
 const FolderCard = ({ folder, onEdit, onDelete, onOpen, onView }) => {
   const [showActions, setShowActions] = useState(false);

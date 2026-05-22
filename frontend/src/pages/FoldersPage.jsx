@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import { Plus, Search, ArrowLeft } from 'lucide-react';
 import { useFolders } from '../hooks/useFolders';
 import { useToast } from '../hooks/useToast';
-import { useAuth } from '../context/AuthContext';
 
 // Components
 import Button from '../components/ui/Button';
@@ -13,7 +12,6 @@ import CreateFolderModal from '../components/folders/CreateFolderModal';
 
 const FoldersPage = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
   const { folders, createFolder, deleteFolder, loading } = useFolders();
   const { toast } = useToast();
   

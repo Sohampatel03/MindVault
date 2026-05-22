@@ -23,9 +23,7 @@ const QuestionCard = ({
   totalQuestions
 }) => {
   const [selectedOption, setSelectedOption] = useState(currentAnswer || '');
-  const [showExplanation, setShowExplanation] = useState(false);
 
-  // Update selectedOption when currentAnswer changes (when moving between questions)
   useEffect(() => {
     setSelectedOption(currentAnswer || '');
   }, [currentAnswer]);
@@ -36,7 +34,6 @@ const QuestionCard = ({
   };
 
   const isCorrect = showResult && selectedOption === question.question?.answer;
-  const isIncorrect = showResult && selectedOption && selectedOption !== question.question?.answer;
 
   return (
     <motion.div
@@ -46,7 +43,6 @@ const QuestionCard = ({
       transition={{ duration: 0.4 }}
       className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden"
     >
-      {/* Header */}
       <div className="bg-gradient-to-r from-indigo-50 to-purple-50 px-6 py-4 border-b border-gray-200">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
@@ -60,8 +56,6 @@ const QuestionCard = ({
               </p>
             </div>
           </div>
-          
-          {/* Question Type Badge */}
           <div className="flex items-center space-x-2">
             {question.imageUrl ? (
               <div className="flex items-center space-x-1 bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs">
@@ -78,9 +72,7 @@ const QuestionCard = ({
         </div>
       </div>
 
-      {/* Question Content */}
       <div className="p-6">
-        {/* Question Text */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -92,10 +84,9 @@ const QuestionCard = ({
           </h4>
         </motion.div>
 
-        {/* Options */}
         <div className="space-y-3 mb-6">
           {question.question?.options?.map((option, index) => {
-            const optionLetter = String.fromCharCode(65 + index); // A, B, C, D
+            const optionLetter = String.fromCharCode(65 + index);
             const isSelected = selectedOption === optionLetter;
             const isCorrectOption = showResult && optionLetter === question.question?.answer;
             const isWrongSelected = showResult && isSelected && !isCorrectOption;
@@ -125,7 +116,6 @@ const QuestionCard = ({
                 `}
               >
                 <div className="flex items-center space-x-3">
-                  {/* Option Letter */}
                   <div className={`
                     w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold
                     ${showResult
@@ -141,8 +131,6 @@ const QuestionCard = ({
                   `}>
                     {optionLetter}
                   </div>
-
-                  {/* Option Text */}
                   <span className={`
                     flex-1 text-sm
                     ${showResult
@@ -158,8 +146,6 @@ const QuestionCard = ({
                   `}>
                     {option}
                   </span>
-
-                  {/* Result Icons */}
                   {showResult && (
                     <motion.div
                       initial={{ scale: 0 }}
@@ -174,8 +160,6 @@ const QuestionCard = ({
                     </motion.div>
                   )}
                 </div>
-
-                {/* Selection Animation */}
                 {isSelected && !showResult && (
                   <motion.div
                     layoutId="selectedOption"
@@ -189,19 +173,15 @@ const QuestionCard = ({
           })}
         </div>
 
-        {/* Navigation Buttons */}
         <div className="flex items-center justify-between">
           <Button
             variant="outline"
             onClick={onPrevious}
             disabled={isFirst}
-            className="flex items-center space-x-2"
           >
-            <span>Previous</span>
+            Previous
           </Button>
-
-          <div className="flex items-center space-x-2">
-            {/* Link to Concept */}
+          <div>
             {question.link && (
               <Button
                 variant="ghost"
@@ -214,17 +194,11 @@ const QuestionCard = ({
               </Button>
             )}
           </div>
-
-          <Button
-            onClick={onNext}
-            disabled={!selectedOption}
-            className="flex items-center space-x-2"
-          >
-            <span>{isLast ? 'Submit Quiz' : 'Next'}</span>
+          <Button onClick={onNext} disabled={!selectedOption}>
+            {isLast ? 'Submit Quiz' : 'Next'}
           </Button>
         </div>
 
-        {/* Answer Feedback (for result mode) */}
         <AnimatePresence>
           {showResult && (
             <motion.div
@@ -249,7 +223,7 @@ const QuestionCard = ({
                   </p>
                   {!isCorrect && (
                     <p className="text-sm text-red-700 mt-1">
-                      The correct answer is: <strong>{question.question?.answer}</strong>
+                      Correct answer: <strong>{question.question?.answer}</strong>
                     </p>
                   )}
                 </div>

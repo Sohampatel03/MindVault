@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Brain, FileText, Image as ImageIcon, Wand2 } from 'lucide-react';
+import { Brain, FileText, Wand2 } from 'lucide-react';
 import Button from '../ui/Button';
 import Input from '../ui/Input';
 import ImageUpload from './ImageUpload';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Brain } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { useToast } from '../hooks/useToast';
 import { useConcepts } from '../hooks/useConcepts';
 

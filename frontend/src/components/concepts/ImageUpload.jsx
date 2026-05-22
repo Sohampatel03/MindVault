@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { motion } from 'framer-motion';
-import { Upload, Image, X, FileImage } from 'lucide-react';
+import { Upload, X, FileImage } from 'lucide-react';
 
 const ImageUpload = ({ onImageSelect, selectedImage, onRemoveImage, existingImageUrl }) => {
   const [dragOver, setDragOver] = useState(false);

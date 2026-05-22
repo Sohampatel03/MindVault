@@ -1,10 +1,7 @@
-// src/pages/QuizResultsPage.jsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, RotateCcw, Home, Share2 } from 'lucide-react';
-
-// Components
+import { ArrowLeft, RotateCcw, Home } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Breadcrumb from '../components/common/Breadcrumb';
 import QuizResults from '../components/quiz/QuizResults';
@@ -13,14 +10,12 @@ const QuizResultsPage = () => {
   const { folderId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  
-  // Get results from navigation state
-  const [results, setResults] = useState(location.state?.results || null);
-  const [quiz, setQuiz] = useState(location.state?.quiz || null);
-  const [answers, setAnswers] = useState(location.state?.answers || {});
+
+  const results = location.state?.results || null;
+  const quiz = location.state?.quiz || null;
+  const answers = location.state?.answers || {};
 
   useEffect(() => {
-    // If no results in state, redirect back to folder
     if (!results || !quiz) {
       navigate(`/folder/${folderId}`, { replace: true });
     }
@@ -30,29 +25,15 @@ const QuizResultsPage = () => {
     { label: 'Dashboard', href: '/dashboard' },
     { label: 'Folders', href: '/folders' },
     { label: 'Folder Details', href: `/folder/${folderId}` },
-    { label: 'Quiz Results', href: '#', current: true }
+    { label: 'Quiz Results', href: '#', current: true },
   ];
-
-  const handleRetakeQuiz = () => {
-    navigate(`/folder/${folderId}/quiz`);
-  };
-
-  const handleBackToFolder = () => {
-    navigate(`/folder/${folderId}`);
-  };
-
-  const handleBackToDashboard = () => {
-    navigate('/dashboard');
-  };
 
   if (!results || !quiz) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <p className="text-gray-600 mb-4">No quiz results found</p>
-          <Button onClick={() => navigate(`/folder/${folderId}`)}>
-            Back to Folder
-          </Button>
+          <Button onClick={() => navigate(`/folder/${folderId}`)}>Back to Folder</Button>
         </div>
       </div>
     );
@@ -60,16 +41,14 @@ const QuizResultsPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <header className="bg-white shadow-sm px-6 py-4 sticky top-0 z-40">
         <div className="max-w-6xl mx-auto">
           <Breadcrumb items={breadcrumbItems} />
-          
           <div className="flex items-center justify-between mt-4">
             <div className="flex items-center space-x-4">
               <Button
                 variant="outline"
-                onClick={handleBackToFolder}
+                onClick={() => navigate(`/folder/${folderId}`)}
                 className="flex items-center space-x-2"
               >
                 <ArrowLeft className="w-4 h-4" />
@@ -82,12 +61,10 @@ const QuizResultsPage = () => {
                 </p>
               </div>
             </div>
-
-            {/* Quick Actions */}
             <div className="flex items-center space-x-3">
               <Button
                 variant="outline"
-                onClick={handleRetakeQuiz}
+                onClick={() => navigate(`/folder/${folderId}/quiz`)}
                 className="flex items-center space-x-2"
               >
                 <RotateCcw className="w-4 h-4" />
@@ -95,7 +72,7 @@ const QuizResultsPage = () => {
               </Button>
               <Button
                 variant="ghost"
-                onClick={handleBackToDashboard}
+                onClick={() => navigate('/dashboard')}
                 className="flex items-center space-x-2"
               >
                 <Home className="w-4 h-4" />
@@ -106,7 +83,6 @@ const QuizResultsPage = () => {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="p-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -117,9 +93,9 @@ const QuizResultsPage = () => {
             results={results}
             quiz={quiz}
             answers={answers}
-            onRetakeQuiz={handleRetakeQuiz}
-            onBackToDashboard={handleBackToDashboard}
-            onBackToFolder={handleBackToFolder}
+            onRetakeQuiz={() => navigate(`/folder/${folderId}/quiz`)}
+            onBackToDashboard={() => navigate('/dashboard')}
+            onBackToFolder={() => navigate(`/folder/${folderId}`)}
           />
         </motion.div>
       </main>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { CheckCircle, Circle, Clock } from 'lucide-react';
+import { CheckCircle, Circle } from 'lucide-react';
 
 const ProgressBar = ({ 
   totalQuestions, 
