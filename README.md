@@ -20,7 +20,7 @@
 
 | Landing Page | Dashboard | Quiz Mode |
 |---|---|---|
-| ![Landing](https://via.placeholder.com/280x160/6366f1/white?text=Landing+Page) | ![Dashboard](https://via.placeholder.com/280x160/8b5cf6/white?text=Dashboard) | ![Quiz](https://via.placeholder.com/280x160/10b981/white?text=Quiz+Mode) |
+| ![Landing](https://kommodo.ai/i/4kdw6KHT8U9oyI1elzzw) | ![Dashboard](https://kommodo.ai/i/ixjOwevQe0IC5uXOJ63I) | ![Quiz](https://kommodo.ai/i/1R4946DnutX7lCanxBFU) |
 
 ---
 
